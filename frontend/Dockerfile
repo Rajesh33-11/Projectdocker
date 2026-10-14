@@ -1,0 +1,14 @@
+# Stage 1: build
+FROM node:18-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# Stage 2: serve with nginx
+FROM nginx:alpine
+# React = /app/build, Vite = /app/dist  (mee project ki taggattu marchandi)
+COPY --from=build /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
